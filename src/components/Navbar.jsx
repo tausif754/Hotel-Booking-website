@@ -1,7 +1,31 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+
+const BookIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="feather feather-book-open"
+  >
+    <path d="M2 3h20a2 2 0 012 2v14a2 2 0 01-2 2H2a2 2 0 01-2-2V5a2 2 0 012-2z"></path>
+    <path d="M22 7H2"></path>
+    <path d="M22 17H2"></path>
+    <path d="M6.5 3h11a1.5 1.5 0 011.5 1.5v15a1.5 1.5 0 01-1.5 1.5h-11a1.5 1.5 0 01-1.5-1.5V4.5A1.5 1.5 0 016.5 3z"></path>
+    <path d="M6.5 7h11"></path>
+    <path d="M6.5 17h11"></path>
+    <path d="M6.5,12h11"></path>
+    <path d="M6.5,8h11"></path>
+  </svg>
+);
 const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
@@ -10,19 +34,29 @@ const Navbar = () => {
     { name: "About", path: "/" },
   ];
 
-  const [isScrolled, setIsScrolled] = React.useState(false);
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { openSignIn } = useClerk();
   const { user } = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // If the user is NOT on the homepage, always set scrolled to true
+    if (location.pathname !== "/") {
+      setIsScrolled(true);
+      return;
+    } else {
+      setIsScrolled(false);
+    }
+    setIsScrolled((prev) => (location.pathname !== "/" ? true : prev));
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location.pathname]);
 
   return (
     <nav
@@ -63,6 +97,7 @@ const Navbar = () => {
           className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
             isScrolled ? "text-black" : "text-white"
           } transition-all`}
+          onClick={() => navigate("/owner")}
         >
           Dashbord
         </button>
@@ -75,16 +110,40 @@ const Navbar = () => {
           alt="search"
           className={`{$isScrolled && 'invert'} h-7 transition-all duration-500`}
         />
-        <button
-          onClick={openSignIn}
-          className="bg-black text-white px-8 py-2.5 rounded-full ml-4 transition-all duration-500"
-        >
-          Login
-        </button>
+        {user ? (
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="My Bookings"
+                labelIcon={<BookIcon />}
+                onClick={() => navigate("/my-bookings")}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
+        ) : (
+          <button
+            onClick={openSignIn}
+            className="bg-black text-white px-8 py-2.5 rounded-full ml-4 transition-all duration-500"
+          >
+            Login
+          </button>
+        )}
       </div>
 
       {/* Mobile Menu Button */}
+
       <div className="flex items-center gap-3 md:hidden">
+        {user && (
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="My Bookings"
+                labelIcon={<BookIcon />}
+                onClick={() => navigate("/my-bookings")}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
+        )}
         <img
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           src={assets.menuIcon}
@@ -112,16 +171,23 @@ const Navbar = () => {
           </a>
         ))}
 
-        <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
-          Dashboard
-        </button>
+        {user && (
+          <button
+            className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
+            onClick={() => navigate("/owner")}
+          >
+            Dashboard
+          </button>
+        )}
 
-        <button
-          onClick={openSignIn}
-          className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500"
-        >
-          Login
-        </button>
+        {!user && (
+          <button
+            onClick={openSignIn}
+            className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500"
+          >
+            Login
+          </button>
+        )}
       </div>
     </nav>
   );
