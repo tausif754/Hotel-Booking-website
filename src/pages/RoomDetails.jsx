@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { assets, facilityIcons, roomsDummyData } from "../assets/assets";
+import {
+  assets,
+  facilityIcons,
+  roomCommonData,
+  roomsDummyData,
+} from "../assets/assets";
 import StarRating from "../components/StarRating";
 
 const RoomDetails = () => {
@@ -152,6 +157,55 @@ const RoomDetails = () => {
             Check Availability
           </button>
         </form>
+
+        {/* Commmon Specifications */}
+        <div className="mt-25 space-y-4">
+          {roomCommonData.map((spec, index) => (
+            <div key={index} className="flex items-start gap-2">
+              <img
+                src={spec.icon}
+                alt={`${spec.title}-icon`}
+                className="w-6.5"
+              />
+              <div>
+                <p className="text-base">{spec.title}</p>
+                <p className="text-gray-500">{spec.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Description text */}
+
+        <div className="max-w-3xl border-y border-gray-300 my-15 py-10 text-gray-500">
+          <p>
+            Gusets will be allocated on the ground floor according to
+            availability. You get a comfortable stay with a double bed, a sofa,
+            and a TV. The room is equipped with a mini fridge and a kettle. The
+            bathroom has a shower and basic toiletries. The room is
+            air-conditioned and has Wi-Fi access. You can enjoy the view of the
+            garden from the window. The hotel also offers laundry service and
+            room service at an extra cost.
+          </p>
+        </div>
+
+        {/* Hosted by */}
+        <div className="flex flex-col items-start gap-4 ">
+          <div className="flex gap-4">
+            <img
+              src={room.hotel.owner.image}
+              alt="Host"
+              className="h-14 w-14 md:h-18 md:w-18 rounded-full"
+            />
+
+            <div>
+              <p className="text-lg md:tex-xl">Hosted by {room.hotel.name}</p>
+              <div className="flex items-center mt-1">
+                <StarRating />
+                <p className="ml-2">200+ reviews</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   );
