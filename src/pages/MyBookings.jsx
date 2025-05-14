@@ -26,7 +26,7 @@ const MyBookings = () => {
             className="grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b broder-gray-300 py-6 first:border-t"
           >
             {/* Hotel details */}
-            <div>
+            <div className="flex flex-col md:flex-row ">
               <img
                 src={booking.room.images[0]}
                 alt="hotel-img"
@@ -43,11 +43,56 @@ const MyBookings = () => {
                   <img src={assets.locationIcon} alt="location-icon" />
                   <div>{booking.hotel.address}</div>
                 </div>
-                {/* Date & Timings */}
-                <div></div>
-                {/* Payment status */}
-                <div></div>
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <img src={assets.guestsIcon} alt="guests-icon" />
+                  <span>Gusest: {booking.guests}</span>
+                </div>
+
+                <p className="text-base">Total: ${booking.totalPrice}</p>
               </div>
+            </div>
+
+            {/* Date & Timings */}
+            <div
+              className="flex flex-row md:items-center md:gap-6 mt-3 gap-8
+                "
+            >
+              <div>
+                <p className="text-gray-500 text-sm">Check-In:</p>
+                <p>{new Date(booking.checkInDate).toDateString()}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Check-Out:</p>
+                <p>{new Date(booking.checkOutDate).toDateString()}</p>
+              </div>
+            </div>
+            {/* Payment status */}
+            <div className="flex flex-col items-start justify-center pt-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`h-3 w-3 rounded-full ${
+                    booking.isPaid ? "bg-green-500" : "bg-red-500"
+                  }`}
+                ></div>
+                <p
+                  className={`text-sm ${
+                    booking.isPaid ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {booking.isPaid ? "Paid" : "Not Paid"}
+                </p>
+              </div>
+              <p className="text-sm text-gray-500">
+                {booking.isPaid
+                  ? "Your payment has been received"
+                  : "Please pay to confirm your booking"}
+              </p>
+
+              {!booking.isPaid && (
+                <button className="px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-100 transition-all duration-200 cursor-pointer">
+                  Pay Now
+                </button>
+              )}
             </div>
           </div>
         ))}
